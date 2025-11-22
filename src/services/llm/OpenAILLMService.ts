@@ -40,8 +40,36 @@ export class OpenAILLMService implements LLMProvider {
         console.log('OpenAILLMService: Parsing requirements...');
 
         try {
+            // Dynamically inject current date into system prompt
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }); // Format: "November 22, 2025"
+
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth(); // 0-indexed (0 = January, 11 = December)
+            const nextYear = currentYear + 1;
+
+            // Generate dynamic examples based on current date
+            // Example: If current month is November (10), a past month like May (4) should use next year
+            const pastMonthExample = currentMonth >= 4 ? 'May' : 'January';
+            const pastMonthYear = currentMonth >= 4 ? nextYear : currentYear;
+            const futureMonthExample = currentMonth < 11 ? 'December' : 'February';
+            const futureMonthYear = currentMonth < 11 ? currentYear : nextYear;
+
+            let systemPromptWithDate = this.systemPrompt
+                .replace(/{{CURRENT_DATE}}/g, formattedDate)
+                .replace(/{{CURRENT_YEAR}}/g, currentYear.toString())
+                .replace(/{{NEXT_YEAR}}/g, nextYear.toString())
+                .replace(/{{PAST_MONTH_EXAMPLE}}/g, pastMonthExample)
+                .replace(/{{PAST_MONTH_YEAR}}/g, pastMonthYear.toString())
+                .replace(/{{FUTURE_MONTH_EXAMPLE}}/g, futureMonthExample)
+                .replace(/{{FUTURE_MONTH_YEAR}}/g, futureMonthYear.toString());
+
             const messages = [
-                { role: "system" as const, content: this.systemPrompt },
+                { role: "system" as const, content: systemPromptWithDate },
                 { role: "user" as const, content: this.developerPrompt.replace('{{USER_MESSAGE}}', message) }
             ];
             console.log('OpenAILLMService: Sending messages to OpenAI:', JSON.stringify(messages, null, 2));
