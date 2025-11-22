@@ -23,6 +23,10 @@ contract TeamManager {
     // This root is a cryptographic commitment (e.g., Merkle root) to the team's member list.
     mapping(uint256 => bytes32) public teamCommitment;
 
+    // (Optional for testing) Mapping to track membership status directly.
+    // This simplifies testing before ZK/EVVM integration.
+    mapping(uint256 => mapping(address => bool)) public isMember;
+
     // --- Events ---
 
     // Emitted when a new team is created.
@@ -75,33 +79,44 @@ contract TeamManager {
 
     /**
      * @dev Invites a user to join a team.
+     *      - Only the team owner can call this function.
+     *      - Sets a pending invitation for the specified user.
+     *      - Emits an {Invited} event.
      * @param _teamId The ID of the team.
      * @param _user The address of the user to invite.
      */
     function inviteUser(uint256 _teamId, address _user) external {
-        // Placeholder for invitation logic.
-        // It should verify that the caller is the team owner
-        // and then set the pending invite status.
+        require(msg.sender == teamOwner[_teamId], "Only the team owner can invite users.");
+        pendingInvites[_teamId][_user] = true;
+        emit Invited(_teamId, _user);
     }
 
     /**
      * @dev Accepts an invitation to join a team.
+     *      - Only the invited user can call this function.
+     *      - Clears the pending invitation and marks the user as a member.
+     *      - Emits an {Accepted} event.
      * @param _teamId The ID of the team.
      */
     function acceptInvite(uint256 _teamId) external {
-        // Placeholder for accepting an invitation.
-        // It should verify that the caller has a pending invite
-        // and then handle the acceptance logic.
+        require(pendingInvites[_teamId][msg.sender], "You have not been invited to this team.");
+        pendingInvites[_teamId][msg.sender] = false;
+        isMember[_teamId][msg.sender] = true;
+        emit Accepted(_teamId, msg.sender);
     }
 
     /**
      * @dev Removes a member from a team.
+     *      - Only the team owner can call this function.
+     *      - Marks the user as no longer a member.
+     *      - Emits a {MemberRemoved} event.
      * @param _teamId The ID of the team.
      * @param _user The address of the member to remove.
      */
     function removeMember(uint256 _teamId, address _user) external {
-        // Placeholder for member removal logic.
-        // It should verify that the caller is the team owner.
+        require(msg.sender == teamOwner[_teamId], "Only the team owner can remove members.");
+        isMember[_teamId][_user] = false;
+        emit MemberRemoved(_teamId, _user);
     }
 
     /**
