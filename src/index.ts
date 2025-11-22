@@ -2,8 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import apiRoutes from './routes/api.js';
+import { createApiRoutes } from './routes/api.js';
 import { getOpenApiComponents } from './schemas/bookingSchemas.js';
+import { createContainer } from './container.js';
 
 dotenv.config();
 
@@ -34,6 +35,10 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Initialize dependencies
+const dependencies = createContainer();
+const apiRoutes = createApiRoutes(dependencies);
 
 app.use('/api', apiRoutes);
 
