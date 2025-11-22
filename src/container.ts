@@ -16,7 +16,6 @@ export function createContainer(): AppDependencies {
 
     const bookingService = new AirbnbService();
     // const bookingService = new BookingDotComService();
-    // const bookingService = new HackerHouseBookingService(); // Mock alternative
 
     const llmService = new OpenAILLMService();
     const safetyService = new SafetyService(llmService);
