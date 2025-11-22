@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import apiRoutes from './routes/api.js';
+import { getOpenApiComponents } from './schemas/bookingSchemas.js';
 
 dotenv.config();
 
@@ -10,6 +11,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+const components = getOpenApiComponents();
 
 const swaggerOptions = {
     definition: {
@@ -24,6 +27,7 @@ const swaggerOptions = {
                 url: `http://localhost:${port}`,
             },
         ],
+        components: components
     },
     apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // files containing annotations as above
 };
