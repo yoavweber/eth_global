@@ -3,9 +3,12 @@ import { LLMProvider } from './interfaces/LLMProvider.js';
 import { OpenAILLMService } from './services/llm/OpenAILLMService.js';
 import { AirbnbService } from './services/booking/AirbnbService.js';
 
+import { SafetyService } from './services/safety/SafetyService.js';
+
 export interface AppDependencies {
     bookingService: BookingProvider;
     llmService: LLMProvider;
+    safetyService: SafetyService;
 }
 
 export function createContainer(): AppDependencies {
@@ -16,10 +19,11 @@ export function createContainer(): AppDependencies {
     // const bookingService = new HackerHouseBookingService(); // Mock alternative
 
     const llmService = new OpenAILLMService();
-    // const llmService = new LLMService(); // Mock alternative
+    const safetyService = new SafetyService(llmService);
 
     return {
         bookingService,
-        llmService
+        llmService,
+        safetyService
     };
 }
