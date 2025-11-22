@@ -10,6 +10,7 @@ export function createApiRoutes(dependencies: AppDependencies) {
     router.post('/llm-search', controller.llmSearch.bind(controller));
     router.post('/search', controller.search.bind(controller));
     router.post('/safety', controller.checkSafety.bind(controller));
+    router.post('/location-score', controller.checkLocationScore.bind(controller));
 
     return router;
 }
