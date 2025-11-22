@@ -1,0 +1,914 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hacker House Booking Agent API",
+    "version": "1.0.0",
+    "description": "API for searching and booking hacker houses"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Coordinates": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number",
+            "example": 38.7223
+          },
+          "lng": {
+            "type": "number",
+            "example": -9.1393
+          }
+        },
+        "required": [
+          "lat",
+          "lng"
+        ]
+      },
+      "Proximity": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "example": "10 minute walk to the venue"
+          },
+          "distanceKm": {
+            "type": "number",
+            "example": 0.8
+          }
+        },
+        "required": [
+          "description"
+        ]
+      },
+      "CoworkingProximity": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Proximity"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "Second Home Lisboa"
+              }
+            }
+          }
+        ]
+      },
+      "ListingInsights": {
+        "type": "object",
+        "properties": {
+          "listingId": {
+            "type": "string",
+            "example": "1"
+          },
+          "areaSafety": {
+            "type": "string",
+            "example": "Very safe, well-lit streets, tourist-heavy"
+          },
+          "eventProximity": {
+            "$ref": "#/components/schemas/Proximity"
+          },
+          "coworkingProximity": {
+            "$ref": "#/components/schemas/CoworkingProximity"
+          },
+          "caveats": {
+            "type": "string",
+            "example": "Noise at night due to bars nearby"
+          }
+        },
+        "required": [
+          "listingId",
+          "areaSafety",
+          "eventProximity",
+          "coworkingProximity"
+        ]
+      },
+      "Listing": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Hacker Haven"
+          },
+          "description": {
+            "type": "string",
+            "example": "A great place for hackers"
+          },
+          "link": {
+            "type": "string",
+            "example": "https://airbnb.com/rooms/1"
+          },
+          "city": {
+            "type": "string",
+            "example": "San Francisco"
+          },
+          "neighborhood": {
+            "type": "string",
+            "example": "Alfama"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "price": {
+            "type": "number",
+            "example": 150
+          },
+          "bedrooms": {
+            "type": "number",
+            "example": 3
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.8
+          },
+          "reviewsCount": {
+            "type": "integer",
+            "example": 120
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "https://example.com/image.jpg"
+            ]
+          },
+          "safetyScore": {
+            "type": "number",
+            "example": 9.5
+          },
+          "distanceToEvent": {
+            "type": "number",
+            "example": 0.5
+          },
+          "workspaceScore": {
+            "type": "number",
+            "example": 10
+          },
+          "amenities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Wifi",
+              "Coffee"
+            ]
+          },
+          "insights": {
+            "$ref": "#/components/schemas/ListingInsights"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "price",
+          "bedrooms",
+          "safetyScore",
+          "distanceToEvent",
+          "workspaceScore",
+          "amenities"
+        ]
+      },
+      "SearchCriteria": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "example": "San Francisco"
+          },
+          "checkInDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-01"
+          },
+          "checkOutDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-07"
+          },
+          "bedrooms": {
+            "type": "integer",
+            "example": 3
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "coordinates": {
+                  "type": "object",
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lng": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lng"
+                  ]
+                }
+              },
+              "required": [
+                "name",
+                "coordinates"
+              ]
+            }
+          },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "minPrice": {
+                "type": "number"
+              },
+              "maxPrice": {
+                "type": "number"
+              },
+              "minSafetyScore": {
+                "type": "number"
+              },
+              "minWorkspaceScore": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "city",
+          "checkInDate",
+          "checkOutDate",
+          "bedrooms"
+        ]
+      },
+      "BookingDetails": {
+        "type": "object",
+        "properties": {
+          "listingId": {
+            "type": "string",
+            "example": "1"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-01"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2023-10-07"
+          },
+          "nights": {
+            "type": "integer",
+            "example": 6
+          },
+          "payers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Alice",
+              "Bob"
+            ]
+          },
+          "bps": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              5000,
+              5000
+            ]
+          }
+        },
+        "required": [
+          "listingId",
+          "startDate",
+          "endDate",
+          "nights",
+          "payers",
+          "bps"
+        ]
+      },
+      "BookingResult": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "example": "bk_12345"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "pending",
+              "failed"
+            ],
+            "example": "confirmed"
+          },
+          "details": {
+            "$ref": "#/components/schemas/BookingDetails"
+          }
+        },
+        "required": [
+          "bookingId",
+          "status",
+          "details"
+        ]
+      },
+      "ListingResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          },
+          "listings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Listing"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "count",
+          "listings"
+        ]
+      },
+      "TravelRequirements": {
+        "type": "object",
+        "properties": {
+          "destination": {
+            "type": "object",
+            "properties": {
+              "city": {
+                "type": "string"
+              },
+              "country": {
+                "type": "string"
+              },
+              "region": {
+                "type": "string"
+              },
+              "rawText": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "rawText"
+            ],
+            "example": {
+              "city": "Lisbon",
+              "country": "Portugal",
+              "rawText": "Portugal or Spain"
+            }
+          },
+          "dates": {
+            "type": "object",
+            "properties": {
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "roughWindow": {
+                "type": "string"
+              },
+              "durationDays": {
+                "type": "number"
+              },
+              "isFlexible": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "isFlexible"
+            ],
+            "example": {
+              "roughWindow": "mid-May",
+              "isFlexible": true
+            }
+          },
+          "travelers": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "roomPreferences": {
+                "type": "string"
+              }
+            },
+            "example": {
+              "count": 12,
+              "roomPreferences": "single rooms"
+            }
+          },
+          "budget": {
+            "type": "object",
+            "properties": {
+              "amount": {
+                "type": "number"
+              },
+              "currency": {
+                "type": "string"
+              },
+              "perPerson": {
+                "type": "boolean"
+              }
+            },
+            "example": {
+              "amount": 150,
+              "currency": "USD",
+              "perPerson": true
+            }
+          },
+          "workspace": {
+            "type": "object",
+            "properties": {
+              "needs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "wifi": {
+                "type": "boolean"
+              },
+              "coworking": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "needs"
+            ],
+            "example": {
+              "needs": [
+                "strong wifi"
+              ],
+              "wifi": true
+            }
+          },
+          "vibe": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "beach",
+              "chill"
+            ]
+          },
+          "constraints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "HARD",
+                    "SOFT",
+                    "COMMONSENSE"
+                  ]
+                }
+              },
+              "required": [
+                "description",
+                "type"
+              ]
+            },
+            "example": [
+              {
+                "description": "Must have strong wifi",
+                "type": "HARD"
+              }
+            ]
+          }
+        },
+        "required": [
+          "destination",
+          "dates",
+          "travelers",
+          "workspace",
+          "vibe",
+          "constraints"
+        ]
+      },
+      "EventLocation": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Lisbon Web Summit"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          }
+        },
+        "required": [
+          "name",
+          "coordinates"
+        ]
+      },
+      "CoworkingSpace": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Second Home Lisboa"
+          },
+          "coordinates": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "description": {
+            "type": "string",
+            "example": "Hip coworking space with strong wifi"
+          }
+        },
+        "required": [
+          "name",
+          "coordinates"
+        ]
+      },
+      "SafetyEvaluation": {
+        "type": "object",
+        "properties": {
+          "safety_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 85
+          },
+          "reason": {
+            "type": "string",
+            "example": "Safe residential area with good lighting and nearby amenities."
+          }
+        },
+        "required": [
+          "safety_score",
+          "reason"
+        ]
+      },
+      "LocationScore": {
+        "type": "object",
+        "properties": {
+          "proximity_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 76
+          },
+          "reason": {
+            "type": "string",
+            "example": "The location is within a reasonable 18-minute walk and only 9 minutes by transit, making it moderately close and convenient."
+          }
+        },
+        "required": [
+          "proximity_score",
+          "reason"
+        ]
+      },
+      "LocationScoreRequest": {
+        "type": "object",
+        "properties": {
+          "housing_coords": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "target_coords": {
+            "$ref": "#/components/schemas/Coordinates"
+          }
+        },
+        "required": [
+          "housing_coords",
+          "target_coords"
+        ]
+      },
+      "ListingAspectScores": {
+        "type": "object",
+        "properties": {
+          "overall": {
+            "type": "number",
+            "example": 85
+          },
+          "safety": {
+            "type": "number",
+            "example": 90
+          },
+          "coworkingProximity": {
+            "type": "number",
+            "example": 80
+          },
+          "eventProximity": {
+            "type": "number",
+            "example": 85
+          }
+        },
+        "required": [
+          "overall",
+          "safety",
+          "coworkingProximity"
+        ]
+      },
+      "ScoredListing": {
+        "type": "object",
+        "properties": {
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          },
+          "scores": {
+            "$ref": "#/components/schemas/ListingAspectScores"
+          }
+        },
+        "required": [
+          "listing",
+          "scores"
+        ]
+      },
+      "LLMSearchResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Listings found"
+          },
+          "derivedCriteria": {
+            "$ref": "#/components/schemas/SearchCriteria"
+          },
+          "overallRating": {
+            "type": "number",
+            "example": 85
+          },
+          "count": {
+            "type": "integer",
+            "example": 5
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ScoredListing"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "derivedCriteria",
+          "overallRating",
+          "count",
+          "results"
+        ]
+      },
+      "SearchResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Listings found"
+          },
+          "count": {
+            "type": "integer",
+            "example": 5
+          },
+          "listings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Listing"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "count",
+          "listings"
+        ]
+      },
+      "SafetyResponse": {
+        "type": "object",
+        "properties": {
+          "safety_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 85
+          },
+          "reason": {
+            "type": "string",
+            "example": "Safe residential area with good lighting and nearby amenities."
+          }
+        },
+        "required": [
+          "safety_score",
+          "reason"
+        ]
+      },
+      "LocationScoreResponse": {
+        "type": "object",
+        "properties": {
+          "proximity_score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 76
+          },
+          "reason": {
+            "type": "string",
+            "example": "The location is within a reasonable 18-minute walk and only 9 minutes by transit, making it moderately close and convenient."
+          }
+        },
+        "required": [
+          "proximity_score",
+          "reason"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "example": "Error message"
+          },
+          "details": {
+            "nullable": true
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "SafetyRequest": {
+        "type": "object",
+        "properties": {
+          "listing": {
+            "$ref": "#/components/schemas/Listing"
+          }
+        },
+        "required": [
+          "listing"
+        ]
+      },
+      "LLMSearchRequest": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "We're 6 people, need Lisbon in early May, budget $200 per night"
+          },
+          "event": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EventLocation"
+              },
+              {
+                "description": "Optional event location used for proximity scoring"
+              }
+            ]
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/safety": {
+      "post": {
+        "summary": "Check safety of a listing/location",
+        "description": "Uses LLM to evaluate safety based on listing context.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "listing": {
+                    "$ref": "#/components/schemas/Listing"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Safety evaluation result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SafetyEvaluation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing listing context"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/location-score": {
+      "post": {
+        "summary": "Evaluate proximity score between housing and target location",
+        "description": "Uses OpenRouteService for walking metrics and LLM for scoring.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LocationScoreRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Location score result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationScore"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing coordinates"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "post": {
+        "summary": "Search for listings",
+        "description": "Search for hacker house listings based on criteria.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchCriteria"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of matching listings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListingResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
