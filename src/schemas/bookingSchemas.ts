@@ -165,6 +165,62 @@ registry.register('SafetyEvaluation', SafetyEvaluationSchema);
 registry.register('LocationScore', LocationScoreSchema);
 registry.register('LocationScoreRequest', LocationScoreRequestSchema);
 
+// API Response Schemas
+export const ListingAspectScoresSchema = z.object({
+    overall: z.number().openapi({ example: 85 }),
+    safety: z.number().openapi({ example: 90 }),
+    coworkingProximity: z.number().openapi({ example: 80 }),
+    eventProximity: z.number().optional().openapi({ example: 85 })
+}).openapi('ListingAspectScores');
+
+export const ScoredListingSchema = z.object({
+    listing: ListingSchema,
+    scores: ListingAspectScoresSchema
+}).openapi('ScoredListing');
+
+export const LLMSearchResponseSchema = z.object({
+    message: z.string().openapi({ example: 'Listings found' }),
+    derivedCriteria: SearchCriteriaSchema,
+    overallRating: z.number().openapi({ example: 85 }),
+    count: z.number().int().openapi({ example: 5 }),
+    results: z.array(ScoredListingSchema)
+}).openapi('LLMSearchResponse');
+
+export const SearchResponseSchema = z.object({
+    message: z.string().openapi({ example: 'Listings found' }),
+    count: z.number().int().openapi({ example: 5 }),
+    listings: z.array(ListingSchema)
+}).openapi('SearchResponse');
+
+export const SafetyResponseSchema = SafetyEvaluationSchema.openapi('SafetyResponse');
+
+export const LocationScoreResponseSchema = LocationScoreSchema.openapi('LocationScoreResponse');
+
+export const ErrorResponseSchema = z.object({
+    error: z.string().openapi({ example: 'Error message' }),
+    details: z.unknown().optional()
+}).openapi('ErrorResponse');
+
+// Request Schemas
+export const SafetyRequestSchema = z.object({
+    listing: ListingSchema
+}).openapi('SafetyRequest');
+
+export const LLMSearchRequestSchema = z.object({
+    message: z.string().openapi({ example: "We're 6 people, need Lisbon in early May, budget $200 per night" }),
+    event: EventLocationSchema.optional().openapi({ description: 'Optional event location used for proximity scoring' })
+}).openapi('LLMSearchRequest');
+
+registry.register('ListingAspectScores', ListingAspectScoresSchema);
+registry.register('ScoredListing', ScoredListingSchema);
+registry.register('LLMSearchResponse', LLMSearchResponseSchema);
+registry.register('SearchResponse', SearchResponseSchema);
+registry.register('SafetyResponse', SafetyResponseSchema);
+registry.register('LocationScoreResponse', LocationScoreResponseSchema);
+registry.register('ErrorResponse', ErrorResponseSchema);
+registry.register('SafetyRequest', SafetyRequestSchema);
+registry.register('LLMSearchRequest', LLMSearchRequestSchema);
+
 export function getOpenApiComponents() {
     const generator = new OpenApiGeneratorV3(registry.definitions);
     const doc = generator.generateComponents();
@@ -184,3 +240,14 @@ export type ListingInsights = z.infer<typeof ListingInsightsSchema>;
 export type SafetyEvaluation = z.infer<typeof SafetyEvaluationSchema>;
 export type LocationScore = z.infer<typeof LocationScoreSchema>;
 export type LocationScoreRequest = z.infer<typeof LocationScoreRequestSchema>;
+export type ListingAspectScores = z.infer<typeof ListingAspectScoresSchema>;
+export type ScoredListing = z.infer<typeof ScoredListingSchema>;
+export type LLMSearchResponse = z.infer<typeof LLMSearchResponseSchema>;
+export type SearchResponse = z.infer<typeof SearchResponseSchema>;
+export type SafetyResponse = z.infer<typeof SafetyResponseSchema>;
+export type LocationScoreResponse = z.infer<typeof LocationScoreResponseSchema>;
+export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
+
+// Request Types
+export type SafetyRequest = z.infer<typeof SafetyRequestSchema>;
+export type LLMSearchRequest = z.infer<typeof LLMSearchRequestSchema>;

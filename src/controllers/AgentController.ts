@@ -1,7 +1,21 @@
 import { Request, Response } from 'express';
 
 import { AppDependencies } from '../container.js';
-import { SearchCriteriaSchema } from '../schemas/bookingSchemas.js';
+import {
+    SearchCriteriaSchema,
+    SafetyRequestSchema,
+    LocationScoreRequestSchema,
+    LLMSearchRequestSchema,
+    SafetyRequest,
+    SafetyResponse,
+    LocationScoreRequest,
+    LocationScoreResponse,
+    LLMSearchRequest,
+    LLMSearchResponse,
+    SearchCriteria,
+    SearchResponse,
+    ErrorResponse
+} from '../schemas/bookingSchemas.js';
 import { SearchListingsUseCase, HttpError } from '../usecases/SearchListingsUseCase.js';
 
 export class AgentController {
@@ -53,18 +67,22 @@ export class AgentController {
      *       500:
      *         description: Internal server error
      */
-    async checkSafety(req: Request, res: Response) {
+    async checkSafety(req: Request<{}, SafetyResponse | ErrorResponse, SafetyRequest>, res: Response<SafetyResponse | ErrorResponse>): Promise<void> {
         try {
-            const { listing } = req.body;
-            if (!listing) {
-                return res.status(400).json({ error: "Listing context is required" });
-            }
+            const requestBody = SafetyRequestSchema.parse(req.body);
+            const { listing } = requestBody;
 
-            const evaluation = await this.safetyService.checkSafety(listing);
+            const evaluation: SafetyResponse = await this.safetyService.checkSafety(listing);
             res.json(evaluation);
         } catch (error) {
             console.error('Safety check error:', error);
-            res.status(500).json({ error: "Internal Server Error" });
+            if (error instanceof Error && error.name === 'ZodError') {
+                const errorResponse: ErrorResponse = { error: error.message };
+                res.status(400).json(errorResponse);
+                return;
+            }
+            const errorResponse: ErrorResponse = { error: "Internal Server Error" };
+            res.status(500).json(errorResponse);
         }
     }
 
@@ -92,18 +110,22 @@ export class AgentController {
      *       500:
      *         description: Internal server error
      */
-    async checkLocationScore(req: Request, res: Response) {
+    async checkLocationScore(req: Request<{}, LocationScoreResponse | ErrorResponse, LocationScoreRequest>, res: Response<LocationScoreResponse | ErrorResponse>): Promise<void> {
         try {
-            const { housing_coords, target_coords } = req.body;
-            if (!housing_coords || !target_coords) {
-                return res.status(400).json({ error: "Housing and target coordinates are required" });
-            }
+            const requestBody = LocationScoreRequestSchema.parse(req.body);
+            const { housing_coords, target_coords } = requestBody;
 
-            const score = await this.locationScoreService.checkLocationScore(housing_coords, target_coords);
+            const score: LocationScoreResponse = await this.locationScoreService.checkLocationScore(housing_coords, target_coords);
             res.json(score);
         } catch (error) {
             console.error('Location score check error:', error);
-            res.status(500).json({ error: "Internal Server Error" });
+            if (error instanceof Error && error.name === 'ZodError') {
+                const errorResponse: ErrorResponse = { error: error.message };
+                res.status(400).json(errorResponse);
+                return;
+            }
+            const errorResponse: ErrorResponse = { error: "Internal Server Error" };
+            res.status(500).json(errorResponse);
         }
     }
 
@@ -167,32 +189,36 @@ export class AgentController {
      *       500:
      *         description: Internal server error
      */
-    async llmSearch(req: Request, res: Response) {
+    async llmSearch(req: Request<{}, LLMSearchResponse | ErrorResponse, LLMSearchRequest>, res: Response<LLMSearchResponse | ErrorResponse>): Promise<void> {
         try {
-            const { message, event } = req.body;
-            if (!message) {
-                return res.status(400).json({ error: "Message is required" });
-            }
+            const requestBody = LLMSearchRequestSchema.parse(req.body);
+            const { message, event } = requestBody;
 
             const { derivedCriteria, overallRating, results } =
                 await this.searchUseCase.searchFromMessage(message, { event });
 
-            res.json({
+            const response: LLMSearchResponse = {
                 message: "Listings found",
                 derivedCriteria,
                 overallRating,
                 count: results.length,
                 results
-            });
+            };
+            res.json(response);
         } catch (error) {
             console.error(error);
             if (error instanceof HttpError) {
-                return res.status(error.statusCode).json({ error: error.message, details: error.details });
+                const errorResponse: ErrorResponse = { error: error.message, details: error.details };
+                res.status(error.statusCode).json(errorResponse);
+                return;
             }
             if (error instanceof Error && error.name === 'ZodError') {
-                return res.status(400).json({ error: error.message });
+                const errorResponse: ErrorResponse = { error: error.message };
+                res.status(400).json(errorResponse);
+                return;
             }
-            res.status(500).json({ error: "Internal Server Error" });
+            const errorResponse: ErrorResponse = { error: "Internal Server Error" };
+            res.status(500).json(errorResponse);
         }
     }
 
@@ -220,34 +246,42 @@ export class AgentController {
      *       500:
      *         description: Internal server error
      */
-    async search(req: Request, res: Response) {
+    async search(req: Request<{}, SearchResponse | ErrorResponse, SearchCriteria>, res: Response<SearchResponse | ErrorResponse>): Promise<void> {
         try {
             // Validate request body using Zod
-            const criteria = SearchCriteriaSchema.parse(req.body);
+            const criteria: SearchCriteria = SearchCriteriaSchema.parse(req.body);
 
             // Validate required backend fields as per "Developer Prompt" logic
             // Zod handles type validation, but specific business logic checks:
             if (!criteria.city || !criteria.checkInDate || !criteria.checkOutDate || !criteria.bedrooms) {
-                return res.status(400).json({ error: "Missing required backend fields: city, dates, bedrooms" });
+                const errorResponse: ErrorResponse = { error: "Missing required backend fields: city, dates, bedrooms" };
+                res.status(400).json(errorResponse);
+                return;
             }
 
             const { listings } = await this.searchUseCase.searchFromCriteria(criteria);
 
-            res.json({
+            const response: SearchResponse = {
                 message: "Listings found",
                 count: listings.length,
                 listings: listings
-            });
+            };
+            res.json(response);
 
         } catch (error) {
             console.error(error);
             if (error instanceof HttpError) {
-                return res.status(error.statusCode).json({ error: error.message, details: error.details });
+                const errorResponse: ErrorResponse = { error: error.message, details: error.details };
+                res.status(error.statusCode).json(errorResponse);
+                return;
             }
             if (error instanceof Error && error.name === 'ZodError') {
-                return res.status(400).json({ error: error.message });
+                const errorResponse: ErrorResponse = { error: error.message };
+                res.status(400).json(errorResponse);
+                return;
             }
-            res.status(500).json({ error: "Internal Server Error" });
+            const errorResponse: ErrorResponse = { error: "Internal Server Error" };
+            res.status(500).json(errorResponse);
         }
     }
 }
