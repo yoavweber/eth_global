@@ -1,15 +1,25 @@
 import { z } from 'zod';
 import { extendZodWithOpenApi, OpenAPIRegistry, OpenApiGeneratorV3 } from '@asteasolutions/zod-to-openapi';
-import { registry as evvmRegistry } from './evvmSchemas.js';
+import {
+    HackerProfileSchema,
+    EvvmNameServiceSyncRequestSchema,
+    EvvmNameServiceSyncResponseSchema,
+    EvvmOnboardingRequestSchema,
+    EvvmOnboardingResponseSchema,
+    HackersDebugResponseSchema
+} from './evvmSchemas.js';
 
 extendZodWithOpenApi(z);
 
 export const registry = new OpenAPIRegistry();
 
-// Merge EVVM registry definitions into booking registry
-Object.entries(evvmRegistry.definitions).forEach(([key, value]) => {
-    registry.register(key, value as any);
-});
+// Register EVVM schemas in booking registry
+registry.register('HackerProfile', HackerProfileSchema);
+registry.register('EvvmNameServiceSyncRequest', EvvmNameServiceSyncRequestSchema);
+registry.register('EvvmNameServiceSyncResponse', EvvmNameServiceSyncResponseSchema);
+registry.register('EvvmOnboardingRequest', EvvmOnboardingRequestSchema);
+registry.register('EvvmOnboardingResponse', EvvmOnboardingResponseSchema);
+registry.register('HackersDebugResponse', HackersDebugResponseSchema);
 
 export const CoordinatesSchema = z.object({
     lat: z.number().openapi({ example: 38.7223 }),
