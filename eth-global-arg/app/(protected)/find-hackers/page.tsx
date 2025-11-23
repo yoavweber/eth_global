@@ -1,5 +1,6 @@
 "use client"
 
+import { BackButton } from "@/components/back-button"
 import { HackerCard } from "@/components/hacker-card"
 import { HackerDetailDialog } from "@/components/hacker-detail-dialog"
 import { PageHeader } from "@/components/page-header"
@@ -139,11 +140,10 @@ export default function FindHackersPage() {
               title="Find Your Squad"
               subtitle="Connect with hackers who share your passion"
               customTrigger={
-                <Link href="/world">
-                  <Button className="bg-card/10 hover:bg-card/20 border-2 border-primary text-primary font-mono text-sm px-6 shadow-[0_0_15px_rgba(var(--primary),0.3)]">
-                    🌍 Back to Map
-                  </Button>
-                </Link>
+                <BackButton 
+                  location={locationParam}
+                  event={eventParam}
+                />
               }
             />
 
