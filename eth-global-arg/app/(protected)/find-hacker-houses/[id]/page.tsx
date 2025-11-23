@@ -203,7 +203,7 @@ export default function HackerHouseDetailsPage() {
           className="bg-card/10 hover:bg-card/20 border-2 border-primary text-primary font-mono text-sm px-4 sm:px-6 py-2 rounded-md shadow-[0_0_15px_rgba(var(--primary),0.3)] inline-flex items-center justify-center transition-colors gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
-          Leave House
+          Go back
         </Link>
         <Dialog open={aiChatOpen} onOpenChange={setAiChatOpen}>
           <DialogTrigger asChild>
