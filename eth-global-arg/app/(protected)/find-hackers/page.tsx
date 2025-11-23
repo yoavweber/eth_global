@@ -1,15 +1,14 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { PageHeader } from "@/components/page-header"
 import { HackerCard } from "@/components/hacker-card"
 import { HackerDetailDialog } from "@/components/hacker-detail-dialog"
-import { Code2, Globe, MapPin, MessageSquare, Users, Zap } from "lucide-react"
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { PageHeader } from "@/components/page-header"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Code2, MapPin, MessageSquare, Users, Zap } from "lucide-react"
 import Link from "next/link"
-import { useGetPoapsByEventId } from "@/services/api/poap"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
 
 // Mock data - replace with real API data later
 const mockHackers = [
@@ -80,8 +79,8 @@ export default function FindHackersPage() {
   const locationParam = searchParams.get("location")
   const eventParam = searchParams.get("event")
 
-//   const { data } = useGetPoapsByEventId({ eventId: "214114" })
-//   console.log("data", data)
+  //   const { data } = useGetPoapsByEventId({ eventId: "214114" })
+  //   console.log("data", data)
 
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [selectedLocation, setSelectedLocation] = useState<string | null>(
@@ -174,36 +173,35 @@ export default function FindHackersPage() {
               </div>
             )}
 
-            {/* Stats Bar */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-card/10 border border-primary/20 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-primary" />
-                  <p className="text-xs text-muted-foreground">Online Now</p>
-                </div>
-                <p className="text-2xl font-bold text-primary mt-1">127</p>
-              </div>
-              <div className="bg-card/10 border border-chart-2/20 rounded-lg p-3">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-chart-2" />
-                  <p className="text-xs text-muted-foreground">Total Hackers</p>
-                </div>
-                <p className="text-2xl font-bold text-chart-2 mt-1">1,234</p>
-              </div>
-              <Link href="/matches" className="block">
-                <div className="bg-card/10 border border-chart-3/20 rounded-lg p-3 hover:border-chart-3/40 transition-all cursor-pointer hover:shadow-[0_0_15px_rgba(var(--chart-3),0.2)]">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-chart-3" />
-                    <p className="text-xs text-muted-foreground">
-                      Your Matches
+            {/* View My Matches */}
+            <Link href="/matches" className="block group">
+              <div className="bg-linear-to-r from-chart-3/10 to-chart-3/5 hover:from-chart-3/20 hover:to-chart-3/10 border-2 border-chart-3 rounded-lg p-4 transition-all shadow-[0_0_20px_rgba(var(--chart-3),0.2)] hover:shadow-[0_0_30px_rgba(var(--chart-3),0.4)]">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-chart-3" />
+                      <h3 className="text-chart-3 font-mono text-lg font-bold uppercase tracking-wider">
+                        My Matches
+                      </h3>
+                    </div>
+                    <p className="text-muted-foreground text-sm font-mono">
+                      View your connections and pending requests
                     </p>
                   </div>
-                  <p className="text-2xl font-bold text-chart-3 mt-1">
-                    {filteredHackers.length}
-                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="text-3xl font-bold text-chart-3 font-mono">
+                        {filteredHackers.length}
+                      </p>
+                      <p className="text-xs text-muted-foreground font-mono">
+                        matches
+                      </p>
+                    </div>
+                    <div className="text-2xl">🤝</div>
+                  </div>
                 </div>
-              </Link>
-            </div>
+              </div>
+            </Link>
 
             {/* Filter by Tags */}
             <div className="bg-card/10 border border-primary/20 rounded-lg p-4 space-y-3">
