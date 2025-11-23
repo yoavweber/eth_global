@@ -6,4 +6,7 @@ export const BASE_CACHE_KEYS = {
 
   // Talent Protocol
   getTalentProtocolProfile: "getTalentProtocolProfile",
+
+  // HackerHouses
+  getHackerHouses: "getHackerHouses",
 }
