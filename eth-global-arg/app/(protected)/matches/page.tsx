@@ -1,19 +1,12 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { PageHeader } from "@/components/page-header"
 import { HackerCard } from "@/components/hacker-card"
 import { HackerDetailDialog } from "@/components/hacker-detail-dialog"
+import { PageHeader } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
-import {
-  Heart,
-  MessageSquare,
-  Trophy,
-  Users,
-  UserMinus,
-  Clock,
-} from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Clock, Heart, UserMinus } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -156,37 +149,6 @@ export default function MatchesPage() {
             </Link>
           }
         />
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-card/10 border border-primary/20 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-primary" />
-              <p className="text-xs text-muted-foreground">Total Connections</p>
-            </div>
-            <p className="text-2xl font-bold text-primary mt-1">
-              {connections.length}
-            </p>
-          </div>
-          <div className="bg-card/10 border border-chart-2/20 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-chart-2" />
-              <p className="text-xs text-muted-foreground">Active Chats</p>
-            </div>
-            <p className="text-2xl font-bold text-chart-2 mt-1">
-              {Math.floor(connections.length * 0.7)}
-            </p>
-          </div>
-          <div className="bg-card/10 border border-chart-3/20 rounded-lg p-3">
-            <div className="flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-chart-3" />
-              <p className="text-xs text-muted-foreground">Shared Events</p>
-            </div>
-            <p className="text-2xl font-bold text-chart-3 mt-1">
-              {Math.floor(connections.length * 1.5)}
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Connections List */}
@@ -209,7 +171,7 @@ export default function MatchesPage() {
           </Link>
         </div>
       ) : (
-        <ScrollArea className="h-[calc(100dvh-220px)]">
+        <ScrollArea className="h-[calc(100dvh-110px)]">
           <div className="space-y-3 pr-3">
             {connections.map((hacker, index) => (
               <HackerCard
@@ -239,10 +201,7 @@ export default function MatchesPage() {
                       </Badge>
                     ) : (
                       <>
-                        <HackerDetailDialog
-                          hacker={hacker}
-                          selectedTags={[]}
-                        />
+                        <HackerDetailDialog hacker={hacker} selectedTags={[]} />
                         <Button
                           size="sm"
                           variant="outline"
