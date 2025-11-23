@@ -3,6 +3,25 @@ import { http } from "wagmi"
 import { mainnet, sonic } from "wagmi/chains"
 import { appConfig } from "./env-config"
 
+// Suppress WalletConnect analytics errors
+if (typeof window !== "undefined") {
+  const originalFetch = window.fetch
+  window.fetch = async (...args) => {
+    const url =
+      typeof args[0] === "string"
+        ? args[0]
+        : args[0] instanceof Request
+        ? args[0].url
+        : args[0] instanceof URL
+        ? args[0].toString()
+        : "";
+    if (url.includes("pulse.walletconnect.org")) {
+      return new Response(null, { status: 200 })
+    }
+    return originalFetch(...args)
+  }
+}
+
 export const sonicTestnet = {
   id: 14601,
   name: "Sonic Testnet",
@@ -29,4 +48,5 @@ export const wagmiConfig = getDefaultConfig({
     [sonicTestnet.id]: http(sonicTestnet.rpcUrls.default.http[0]),
   },
   ssr: true,
+  // Analytics option removed as it's not supported
 })
