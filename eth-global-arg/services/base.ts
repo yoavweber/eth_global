@@ -19,7 +19,7 @@ export const externalBackendBasePath = {
   talent_protocol: "https://api.talentprotocol.com/",
 }
 
-export const prefix = "/api/v1"
+export const prefix = "/api"
 
 export const makeBasePath = (environment: string, hasPrefix = true) => {
   const env = environment.trim() as keyof typeof backendBasePath
