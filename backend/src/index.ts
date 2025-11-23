@@ -21,7 +21,7 @@ console.log('SEARCHAPI_IO_API_KEY:', process.env.SEARCHAPI_IO_API_KEY ? '✓ Set
 console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY ? '✓ Set' : '✗ Not set');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 app.use(express.json());
 
