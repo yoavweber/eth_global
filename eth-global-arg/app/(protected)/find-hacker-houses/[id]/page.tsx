@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,7 +14,6 @@ import {
   ArrowLeft,
   Bot,
   Calendar,
-  DollarSign,
   Home,
   MapPin,
   MessageSquare,
@@ -23,6 +21,7 @@ import {
   Users,
 } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 interface Message {
   id: string
@@ -126,7 +125,10 @@ export default function HackerHouseDetailsPage() {
         prev.map((pos) => {
           const deltaX = (Math.random() - 0.5) * 10
           const newX = Math.max(5, Math.min(95, pos.x + deltaX))
-          const newY = Math.max(5, Math.min(95, pos.y + (Math.random() - 0.5) * 10))
+          const newY = Math.max(
+            5,
+            Math.min(95, pos.y + (Math.random() - 0.5) * 10)
+          )
           // Voltear el sprite basado en la dirección del movimiento
           const facingLeft = deltaX < 0
           return {
@@ -325,18 +327,6 @@ export default function HackerHouseDetailsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-card/20 border border-primary/10 rounded-md p-3">
             <div className="flex items-center gap-2 mb-1">
-              <DollarSign className="h-4 w-4 text-chart-3" />
-              <p className="text-xs text-muted-foreground font-mono uppercase">
-                Monthly Budget
-              </p>
-            </div>
-            <p className="text-xl font-bold text-chart-3 font-mono">
-              ${mockHouseData.monthlyBudget}
-            </p>
-          </div>
-
-          <div className="bg-card/20 border border-primary/10 rounded-md p-3">
-            <div className="flex items-center gap-2 mb-1">
               <Users className="h-4 w-4 text-chart-2" />
               <p className="text-xs text-muted-foreground font-mono uppercase">
                 Host
@@ -428,7 +418,9 @@ export default function HackerHouseDetailsPage() {
                     alt={member.name}
                     className="w-24 h-24 object-contain drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]"
                     style={{
-                      transform: position.facingLeft ? "scaleX(-1)" : "scaleX(1)",
+                      transform: position.facingLeft
+                        ? "scaleX(-1)"
+                        : "scaleX(1)",
                       transition: "transform 0.3s ease-in-out",
                     }}
                   />
