@@ -58,49 +58,38 @@ function NameServiceDialog({ address, skills }: NameServiceDialogProps) {
     isAvailable,
     isLoading: isAvailabilityLoading,
     isError: isAvailabilityError,
-  } =
-    useIsUsernameAvailable(effectiveUsername)
+  } = useIsUsernameAvailable(effectiveUsername)
 
   const {
     price,
     isLoading: isPriceLoading,
-    isError: isPriceError,
-  } =
-    useGetPriceOfRegistration(effectiveUsername)
+  } = useGetPriceOfRegistration(effectiveUsername)
 
   const {
     exists,
     isLoading: isExistsLoading,
     isError: isExistsError,
-  } =
-    useVerifyIfIdentityExists(effectiveUsername)
+  } = useVerifyIfIdentityExists(effectiveUsername)
 
   const {
     owner,
     isLoading: isOwnerLoading,
     isError: isOwnerError,
-  } =
-    useGetOwnerOfIdentity(effectiveUsername)
+  } = useGetOwnerOfIdentity(effectiveUsername)
 
   const {
     nonce,
     findNonce,
     isLoading: isNonceLoading,
   } = useFindAvailableNonce(
-    (address ||
-      "0x0000000000000000000000000000000000000000") as `0x${string}`
+    (address || "0x0000000000000000000000000000000000000000") as `0x${string}`
   )
 
   const { signPreRegistration, signRegistration } =
     useNameServiceSignatureBuilder()
-  const {
-    execute: preRegister,
-    isPending: isPrePending,
-  } = usePreRegisterUsername()
-  const {
-    execute: register,
-    isPending: isRegPending,
-  } = useRegisterUsername()
+  const { execute: preRegister, isPending: isPrePending } =
+    usePreRegisterUsername()
+  const { execute: register, isPending: isRegPending } = useRegisterUsername()
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen)
@@ -177,9 +166,9 @@ function NameServiceDialog({ address, skills }: NameServiceDialogProps) {
     try {
       const randomBytes = new Uint8Array(8)
       crypto.getRandomValues(randomBytes)
-      let clowNumber = 0n
+      let clowNumber = BigInt(0)
       for (const b of randomBytes) {
-        clowNumber = (clowNumber << 8n) | BigInt(b)
+        clowNumber = (clowNumber << BigInt(8)) | BigInt(b)
       }
 
       const { hashUsername, signature_pre } = await signPreRegistration(
@@ -597,7 +586,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <div className="w-full mt-6">
+                <div className="w-full my-6">
                   {/* POAP Section - All in One */}
                   {!data || data.length === 0 ? (
                     <div className="flex items-center justify-center gap-3 py-6 text-center rounded-lg bg-card/80">
@@ -678,22 +667,27 @@ export default function ProfilePage() {
             <div></div>
 
             {/* Action Buttons */}
-            <div className="w-full mt-6 grid grid-cols-3 gap-3">
-              <Link
-                href={"/world"}
-                className="w-full flex justify-center items-center bg-card/50 hover:bg-card/60 border-2 border-primary text-primary font-mono text-sm h-12 rounded-lg shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:shadow-[0_0_25px_rgba(var(--primary),0.5)] transition-all uppercase tracking-wider"
-              >
-                🌍 Enter World
-              </Link>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-3">
+                <Link
+                  href={"/world"}
+                  className="w-full flex justify-center items-center bg-card/50 hover:bg-card/60 border-2 border-primary text-primary font-mono text-sm h-12 rounded-lg shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:shadow-[0_0_25px_rgba(var(--primary),0.5)] transition-all uppercase tracking-wider px-4"
+                >
+                  🌍 Enter World
+                </Link>
 
-              <Link
-                href={"/events"}
-                className="w-full flex justify-center items-center bg-card/50 hover:bg-card/60 border-2 border-chart-2 text-chart-2 font-mono text-sm h-12 rounded-lg shadow-[0_0_15px_rgba(var(--chart-2),0.3)] hover:shadow-[0_0_25px_rgba(var(--chart-2),0.5)] transition-all uppercase tracking-wider"
-              >
-                🎯 Browse Events
-              </Link>
+                <Link
+                  href={"/events"}
+                  className="w-full text-nowrap flex justify-center items-center bg-card/50 hover:bg-card/60 border-2 border-chart-2 text-chart-2 font-mono text-sm h-12 rounded-lg shadow-[0_0_15px_rgba(var(--chart-2),0.3)] hover:shadow-[0_0_25px_rgba(var(--chart-2),0.5)] transition-all uppercase tracking-wider px-4"
+                >
+                  🎯 Browse Events
+                </Link>
+              </div>
 
-              <NameServiceDialog address={address} skills={profile?.tags || []} />
+              <NameServiceDialog
+                address={address}
+                skills={profile?.tags || []}
+              />
             </div>
           </div>
         </main>
