@@ -77,35 +77,35 @@ const mockMembers = [
   {
     id: "1",
     name: "Alice.eth",
-    avatar: "/avatars/spr_cat_wcapsulebig_01.gif",
+    avatar: "/avatars/spr_cat01_walking_.gif",
     x: 20,
     y: 30,
   },
   {
     id: "2",
     name: "Bob.eth",
-    avatar: "/avatars/spr_cat_wcapsulebig_02.gif",
+    avatar: "/avatars/spr_cat02_walking_.gif",
     x: 60,
     y: 40,
   },
   {
     id: "3",
     name: "Charlie.eth",
-    avatar: "/avatars/spr_cat_wcapsulebig_03.gif",
+    avatar: "/avatars/spr_cat03_walking_.gif",
     x: 40,
     y: 60,
   },
   {
     id: "4",
     name: "You",
-    avatar: "/avatars/spr_cat_wcapsulebig_04.gif",
+    avatar: "/avatars/spr_cat04_walking_.gif",
     x: 80,
     y: 20,
   },
   {
     id: "5",
     name: "Eve.eth",
-    avatar: "/avatars/spr_cat_wcapsulebig_05.gif",
+    avatar: "/avatars/spr_cat05_walking_.gif",
     x: 30,
     y: 70,
   },
@@ -116,18 +116,26 @@ export default function HackerHouseDetailsPage() {
   const [newMessage, setNewMessage] = useState("")
   const [aiChatOpen, setAiChatOpen] = useState(false)
   const [memberPositions, setMemberPositions] = useState(
-    mockMembers.map((m) => ({ id: m.id, x: m.x, y: m.y }))
+    mockMembers.map((m) => ({ id: m.id, x: m.x, y: m.y, facingLeft: false }))
   )
 
   // Animate members moving randomly
   useEffect(() => {
     const interval = setInterval(() => {
       setMemberPositions((prev) =>
-        prev.map((pos) => ({
-          ...pos,
-          x: Math.max(5, Math.min(95, pos.x + (Math.random() - 0.5) * 10)),
-          y: Math.max(5, Math.min(95, pos.y + (Math.random() - 0.5) * 10)),
-        }))
+        prev.map((pos) => {
+          const deltaX = (Math.random() - 0.5) * 10
+          const newX = Math.max(5, Math.min(95, pos.x + deltaX))
+          const newY = Math.max(5, Math.min(95, pos.y + (Math.random() - 0.5) * 10))
+          // Voltear el sprite basado en la dirección del movimiento
+          const facingLeft = deltaX < 0
+          return {
+            ...pos,
+            x: newX,
+            y: newY,
+            facingLeft,
+          }
+        })
       )
     }, 2000)
 
@@ -419,6 +427,10 @@ export default function HackerHouseDetailsPage() {
                     src={member.avatar}
                     alt={member.name}
                     className="w-24 h-24 object-contain drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]"
+                    style={{
+                      transform: position.facingLeft ? "scaleX(-1)" : "scaleX(1)",
+                      transition: "transform 0.3s ease-in-out",
+                    }}
                   />
                   {/* Name tooltip */}
                   <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
