@@ -34,7 +34,6 @@ export class AgentController {
         this.searchUseCase = new SearchListingsUseCase({
             bookingService: this.bookingService,
             llmService: this.llmService,
-            locationScoreService: this.locationScoreService,
             anchors: {
                 events: {},
                 coworking: {}
