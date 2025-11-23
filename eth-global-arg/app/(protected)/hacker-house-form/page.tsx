@@ -1,5 +1,6 @@
 "use client"
 
+import { BackButton } from "@/components/back-button"
 import { PageHeader } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -78,12 +79,9 @@ export default function HackerHouseFormPage() {
         title="Create Hacker House"
         subtitle="Set up your collaborative space for builders"
         customTrigger={
-          <Link
-            href="/world"
-            className="bg-card/10 hover:bg-card/20 border-2 border-primary text-primary font-mono text-sm px-6 py-2 rounded-md shadow-[0_0_15px_rgba(var(--primary),0.3)] inline-flex items-center justify-center transition-colors"
-          >
-            ← Back to Map
-          </Link>
+          <BackButton
+            label="← Back to Map"
+          />
         }
       />
 

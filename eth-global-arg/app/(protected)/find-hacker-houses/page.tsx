@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { BackButton } from "@/components/back-button"
 import { PageHeader } from "@/components/page-header"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -233,12 +234,11 @@ export default function FindHackerHousesPage() {
         }
         subtitle={event || "Find your perfect collaborative space"}
         customTrigger={
-          <Link
-            href="/world"
-            className="bg-card/10 hover:bg-card/20 border-2 border-primary text-primary font-mono text-sm px-6 py-2 rounded-md shadow-[0_0_15px_rgba(var(--primary),0.3)] inline-flex items-center justify-center transition-colors"
-          >
-            ← Back to Map
-          </Link>
+          <BackButton
+            location={location}
+            event={event}
+            label="← Back to Map"
+          />
         }
       />
 

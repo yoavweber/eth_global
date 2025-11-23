@@ -1,5 +1,6 @@
 "use client"
 
+import { BackButton } from "@/components/back-button"
 import { HackerCard } from "@/components/hacker-card"
 import { HackerDetailDialog } from "@/components/hacker-detail-dialog"
 import { PageHeader } from "@/components/page-header"
@@ -142,11 +143,10 @@ export default function MatchesPage() {
           title="Your Squad"
           subtitle="Your connected hackers"
           customTrigger={
-            <Link href="/find-hackers">
-              <Button className="bg-card/10 hover:bg-card/20 border-2 border-primary text-primary font-mono text-sm px-6 shadow-[0_0_15px_rgba(var(--primary),0.3)]">
-                + Find More
-              </Button>
-            </Link>
+            <BackButton
+              fallbackUrl="/find-hackers"
+              label="+ Find More"
+            />
           }
         />
       </div>
