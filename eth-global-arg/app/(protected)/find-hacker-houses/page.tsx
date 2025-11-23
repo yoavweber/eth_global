@@ -305,11 +305,11 @@ export default function FindHackerHousesPage() {
 
       {/* Filters */}
       <div className="bg-card/10 border border-primary/20 rounded-lg overflow-hidden">
-        <button
-          onClick={() => setFiltersOpen(!filtersOpen)}
-          className="w-full flex items-center justify-between p-4 hover:bg-card/20 transition-colors"
-        >
-          <div className="flex items-center gap-2">
+        <div className="w-full flex items-center justify-between p-4">
+          <button
+            onClick={() => setFiltersOpen(!filtersOpen)}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
             <Filter className="h-4 w-4 text-primary" />
             <h3 className="text-sm font-bold text-primary font-mono uppercase tracking-wider">
               Filters
@@ -321,19 +321,8 @@ export default function FindHackerHousesPage() {
                 Active
               </Badge>
             )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation()
-                resetFilters()
-              }}
-              className="text-xs text-muted-foreground hover:text-primary font-mono underline"
-            >
-              Reset All
-            </button>
             <div
-              className={`transition-transform ${
+              className={`transition-transform ml-2 ${
                 filtersOpen ? "rotate-180" : ""
               }`}
             >
@@ -352,8 +341,14 @@ export default function FindHackerHousesPage() {
                 <polyline points="6 9 12 15 18 9"></polyline>
               </svg>
             </div>
-          </div>
-        </button>
+          </button>
+          <button
+            onClick={resetFilters}
+            className="text-xs text-muted-foreground hover:text-primary font-mono underline"
+          >
+            Reset All
+          </button>
+        </div>
 
         {filtersOpen && (
           <div className="p-4 border-t border-primary/20">
